@@ -501,6 +501,7 @@
 
                     {{-- Grupos de adicionales --}}
                     <div x-show="!cargandoAdicionales && adicionalesProducto.length > 0"
+                         id="adicionales-scroll"
                          class="flex-1 overflow-y-auto pos-scroll px-4 py-3 space-y-4">
                         <template x-for="grupo in adicionalesProducto" :key="grupo.idcategoria">
                             <div :id="'grupo-' + grupo.idcategoria"
@@ -948,6 +949,10 @@ function menuApp() {
             this.puedoAgregar        = false;
             this.cargandoAdicionales = true;
             this.modal               = 'producto';
+            this.$nextTick(() => {
+                const el = document.getElementById('adicionales-scroll');
+                if (el) el.scrollTop = 0;
+            });
             try {
                 const res      = await this.apiPost('{{ route("api.producto") }}', { producto: prod.id });
                 const adicionales = await res.json();
