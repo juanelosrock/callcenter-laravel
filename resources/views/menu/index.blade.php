@@ -131,10 +131,10 @@
         <main class="flex-1 overflow-y-auto pos-scroll px-5 py-4">
 
             {{-- Skeleton --}}
-            <div x-show="cargando" class="grid grid-cols-3 gap-3">
+            <div x-show="cargando" class="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                 <template x-for="i in 16" :key="i">
                     <div class="bg-white rounded-xl overflow-hidden animate-pulse shadow-sm">
-                        <div class="h-24 bg-gray-200"></div>
+                        <div class="h-20 bg-gray-200"></div>
                         <div class="p-2.5 space-y-2">
                             <div class="h-3.5 bg-gray-200 rounded w-3/4"></div>
                             <div class="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -158,14 +158,14 @@
                             </div>
 
                             {{-- Cards --}}
-                            <div class="grid grid-cols-3 gap-3">
+                            <div class="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                                 <template x-for="prod in cat.productos" :key="prod.id">
                                     <button
                                         @click="tiendaAbierta ? abrirProducto(prod, cat) : (modal = 'cerrado')"
                                         class="prod-card bg-white rounded-xl overflow-hidden text-left shadow-sm focus:outline-none"
                                     >
                                         {{-- Imagen --}}
-                                        <div class="relative h-24 bg-gray-100">
+                                        <div class="relative h-20 bg-gray-100">
                                             <img :src="prod.fotoproducto" :alt="prod.nombre"
                                                  class="img-cover"
                                                  onerror="this.onerror=null;this.style.display='none'"/>
