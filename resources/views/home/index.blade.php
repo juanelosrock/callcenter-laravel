@@ -339,7 +339,13 @@ function homeApp() {
         dir: { tipo: '', num1: '', orient1: '', num2: '', orient2: '', num3: '' },
         direccionPreview: '', buscando: false, sinCobertura: false, errorDir: '',
 
+        limpiarPedidoAnterior() {
+            ['pos_carrito','pos_cliente','pos_cliente_guardado','pos_cupon']
+                .forEach(k => localStorage.removeItem(k));
+        },
+
         async cargarCiudades() {
+            this.limpiarPedidoAnterior();
             try {
                 const res = await fetch('{{ route("api.ciudades") }}', {
                     method: 'POST',

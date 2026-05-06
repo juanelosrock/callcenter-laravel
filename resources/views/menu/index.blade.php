@@ -79,13 +79,13 @@
         <div class="w-px h-6 bg-white/20"></div>
 
         {{-- Nuevo pedido --}}
-        <a href="{{ route('pedido.nuevo') }}"
-           class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0">
+        <button @click="nuevoPedido()"
+                class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex-shrink-0">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
             </svg>
             Nuevo pedido
-        </a>
+        </button>
     </header>
 
     {{-- ══════════ BODY ══════════ --}}
@@ -811,11 +811,11 @@
                 </div>
             </template>
 
-            <a href="{{ route('pedido.nuevo') }}"
-               class="block w-full text-white font-bold py-3.5 rounded-xl text-sm text-center hover:opacity-90 transition-opacity"
-               style="background:var(--pos-red);">
+            <button @click="nuevoPedido()"
+                    class="w-full text-white font-bold py-3.5 rounded-xl text-sm hover:opacity-90 transition-opacity"
+                    style="background:var(--pos-red);">
                 Nuevo pedido
-            </a>
+            </button>
         </div>
     </div>
 
@@ -1094,6 +1094,12 @@ function menuApp() {
         validarCliente() {
             const { nombre, celular } = this.cliente;
             this.clienteValido = nombre.trim().length >= 3 && celular.trim().length >= 7;
+        },
+
+        nuevoPedido() {
+            ['pos_carrito','pos_cliente','pos_cliente_guardado','pos_cupon']
+                .forEach(k => localStorage.removeItem(k));
+            window.location.href = '{{ route("pedido.nuevo") }}';
         },
 
         abrirModal(n) { this.modal = n; },
