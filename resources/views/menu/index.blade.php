@@ -131,7 +131,7 @@
         <main class="flex-1 overflow-y-auto pos-scroll px-5 py-4">
 
             {{-- Skeleton --}}
-            <div x-show="cargando" class="grid grid-cols-3 gap-3">
+            <div x-show="cargando" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 <template x-for="i in 16" :key="i">
                     <div class="bg-white rounded-xl overflow-hidden animate-pulse shadow-sm">
                         <div class="h-28 bg-gray-200"></div>
@@ -158,7 +158,7 @@
                             </div>
 
                             {{-- Cards --}}
-                            <div class="grid grid-cols-3 gap-3">
+                            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                                 <template x-for="prod in cat.productos" :key="prod.id">
                                     <button
                                         @click="tiendaAbierta ? abrirProducto(prod, cat) : (modal = 'cerrado')"
