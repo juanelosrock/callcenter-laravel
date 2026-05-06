@@ -949,16 +949,18 @@ function menuApp() {
             this.puedoAgregar        = false;
             this.cargandoAdicionales = true;
             this.modal               = 'producto';
-            this.$nextTick(() => {
-                const el = document.getElementById('adicionales-scroll');
-                if (el) el.scrollTop = 0;
-            });
             try {
                 const res      = await this.apiPost('{{ route("api.producto") }}', { producto: prod.id });
                 const adicionales = await res.json();
                 this.adicionalesProducto = adicionales;
                 if (adicionales.length === 0) this.puedoAgregar = true;
-            } finally { this.cargandoAdicionales = false; }
+            } finally {
+                this.cargandoAdicionales = false;
+                this.$nextTick(() => {
+                    const el = document.getElementById('adicionales-scroll');
+                    if (el) el.scrollTop = 0;
+                });
+            }
         },
 
         verificarAdicionales() {
