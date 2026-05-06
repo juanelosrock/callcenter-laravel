@@ -131,11 +131,11 @@
         <main class="flex-1 overflow-y-auto pos-scroll px-5 py-4">
 
             {{-- Skeleton --}}
-            <div x-show="cargando" class="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+            <div x-show="cargando" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 <template x-for="i in 16" :key="i">
                     <div class="bg-white rounded-xl overflow-hidden animate-pulse shadow-sm">
-                        <div class="h-20 bg-gray-200"></div>
-                        <div class="p-2.5 space-y-2">
+                        <div class="h-28 bg-gray-200"></div>
+                        <div class="p-3 space-y-2">
                             <div class="h-3.5 bg-gray-200 rounded w-3/4"></div>
                             <div class="h-3 bg-gray-200 rounded w-1/2"></div>
                             <div class="h-4 bg-gray-200 rounded w-1/3"></div>
@@ -158,32 +158,32 @@
                             </div>
 
                             {{-- Cards --}}
-                            <div class="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                                 <template x-for="prod in cat.productos" :key="prod.id">
                                     <button
                                         @click="tiendaAbierta ? abrirProducto(prod, cat) : (modal = 'cerrado')"
                                         class="prod-card bg-white rounded-xl overflow-hidden text-left shadow-sm focus:outline-none"
                                     >
                                         {{-- Imagen --}}
-                                        <div class="relative h-20 bg-gray-100">
+                                        <div class="relative h-28 bg-gray-100">
                                             <img :src="prod.fotoproducto" :alt="prod.nombre"
                                                  class="img-cover"
                                                  onerror="this.onerror=null;this.style.display='none'"/>
                                             <template x-if="parseInt(prod.descuento) > 0">
-                                                <span class="absolute top-1 left-1 text-[9px] font-bold bg-[#C62828] text-white px-1 py-0.5 rounded"
+                                                <span class="absolute top-1.5 left-1.5 text-[10px] font-bold bg-[#C62828] text-white px-1.5 py-0.5 rounded"
                                                       x-text="prod.descuento + '% OFF'"></span>
                                             </template>
                                         </div>
                                         {{-- Info --}}
-                                        <div class="p-2.5">
-                                            <h3 class="text-[11px] font-bold text-gray-900 leading-snug mb-1" x-text="prod.nombre"></h3>
-                                            <p class="text-[10px] text-gray-400 leading-snug mb-2" x-text="prod.descripcion || ''"></p>
+                                        <div class="p-3">
+                                            <h3 class="text-xs font-bold text-gray-900 leading-snug line-clamp-2 mb-1" x-text="prod.nombre"></h3>
+                                            <p class="text-[11px] text-gray-400 line-clamp-1 mb-2" x-text="prod.descripcion || ''"></p>
                                             <div class="flex items-center justify-between">
-                                                <span class="text-xs font-extrabold" style="color:var(--pos-red)"
+                                                <span class="text-sm font-extrabold" style="color:var(--pos-red)"
                                                       x-text="'$' + formatNum(prod.precio)"></span>
-                                                <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                                <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
                                                      style="background:var(--pos-red)">
-                                                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/>
                                                     </svg>
                                                 </div>
