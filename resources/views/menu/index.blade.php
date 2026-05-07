@@ -372,9 +372,18 @@
                         <span>Subtotal</span>
                         <span x-text="'$' + formatNum(totalCarrito)"></span>
                     </div>
-                    <div class="flex justify-between text-xs text-gray-500">
-                        <span>Domicilio</span>
-                        <span x-text="'$' + formatNum(valorDomicilio)"></span>
+                    <div class="flex justify-between items-center text-xs text-gray-500">
+                        <div class="flex items-center gap-2">
+                            <span>Domicilio</span>
+                            <button @click="aplicarDomicilio = !aplicarDomicilio" type="button"
+                                    class="relative inline-flex h-4 w-7 flex-shrink-0 items-center rounded-full transition-colors duration-200"
+                                    :class="aplicarDomicilio ? 'bg-[#C62828]' : 'bg-gray-200'">
+                                <span class="inline-block h-3 w-3 rounded-full bg-white shadow transition-transform duration-200"
+                                      :class="aplicarDomicilio ? 'translate-x-3.5' : 'translate-x-0.5'"></span>
+                            </button>
+                        </div>
+                        <span :class="aplicarDomicilio ? '' : 'line-through text-gray-300'"
+                              x-text="'$' + formatNum(valorDomicilio)"></span>
                     </div>
                     <template x-if="cupon.aplicado">
                         <div class="flex justify-between text-xs text-green-600 font-semibold">
@@ -859,7 +868,7 @@ function menuApp() {
     return {
         cargando: true, cargandoAdicionales: false, modal: null,
         menu: [], categorias: [], categoriaFiltro: '0',
-        carrito: [], valorDomicilio: 0, tienda: {}, tiendaAbierta: true,
+        carrito: [], valorDomicilio: 0, aplicarDomicilio: true, tienda: {}, tiendaAbierta: true,
         productoActual: {}, categoriaActual: {}, cantidad: 1,
         adicionalesProducto: [], seleccionAdicionales: {}, puedoAgregar: false,
         formaPagoSeleccionada: '',
@@ -877,7 +886,8 @@ function menuApp() {
             return this.menu.filter(c => String(c.comboid) === String(this.categoriaFiltro));
         },
         get totalCarrito()      { return this.carrito.reduce((s, i) => s + i.total, 0); },
-        get totalConDomicilio() { return this.totalCarrito + parseInt(this.valorDomicilio) - this.cupon.descuento; },
+        get domicilioEfectivo() { return this.aplicarDomicilio ? parseInt(this.valorDomicilio) : 0; },
+        get totalConDomicilio() { return this.totalCarrito + this.domicilioEfectivo - this.cupon.descuento; },
         get subtotalActual() {
             const base  = parseInt(this.productoActual.precio || 0) * this.cantidad;
             const adics = Object.values(this.seleccionAdicionales).reduce((s, id) => {
@@ -1023,7 +1033,7 @@ function menuApp() {
             try {
                 const res  = await this.apiPost('{{ route("api.cupon") }}', {
                     code:   this.cupon.codigo.trim().toUpperCase(),
-                    amount: this.totalCarrito + parseInt(this.valorDomicilio),
+                    amount: this.totalCarrito + this.domicilioEfectivo,
                     phone:  this.cliente.celular || '',
                 });
                 const data = await res.json();
@@ -1069,7 +1079,7 @@ function menuApp() {
                 cantidades: JSON.stringify(this.carrito.map(i => ({ cantidad: i.cantidad }))),
                 totales:    JSON.stringify(this.carrito.map(i => ({ total: i.total }))),
                 contador: this.carrito.length, total: this.totalConDomicilio,
-                valordomicilio: this.valorDomicilio, fcm: localStorage.getItem('fcm') || '',
+                valordomicilio: this.domicilioEfectivo, fcm: localStorage.getItem('fcm') || '',
                 cupon_codigo:     this.cupon.aplicado ? this.cupon.codigo     : '',
                 cupon_descuento:  this.cupon.aplicado ? this.cupon.descuento  : 0,
                 cupon_porcentaje: this.cupon.aplicado ? this.cupon.porcentaje : 0,
