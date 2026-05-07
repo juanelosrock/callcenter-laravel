@@ -897,6 +897,10 @@ function menuApp() {
                 if (c) this.carrito = JSON.parse(c);
                 const cl = localStorage.getItem('pos_cliente');
                 if (cl) this.cliente = JSON.parse(cl);
+                else {
+                    const tel = localStorage.getItem('pos_telefono');
+                    if (tel) this.cliente.celular = tel;
+                }
                 const cg = localStorage.getItem('pos_cliente_guardado');
                 if (cg === '1') { this.clienteGuardado = true; this.validarCliente(); }
                 const cu = localStorage.getItem('pos_cupon');

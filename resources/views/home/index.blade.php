@@ -256,6 +256,19 @@
                             </div>
                         </div>
 
+                        {{-- Teléfono del cliente --}}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wide">Teléfono del cliente</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 8V5z"/>
+                                </svg>
+                                <input x-model="telefono" type="tel" placeholder="Ej: 3001234567"
+                                       class="w-full border-2 border-gray-100 rounded-xl pl-9 pr-3 py-2.5 text-sm text-gray-700 transition-colors"/>
+                            </div>
+                        </div>
+
                         <p x-show="errorDir" class="text-red-500 text-xs flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -337,10 +350,11 @@ function homeApp() {
         ciudades: [], cargandoCiudades: true,
         ciudadSeleccionada: '', nombreCiudad: '', errorCiudad: '',
         dir: { tipo: '', num1: '', orient1: '', num2: '', orient2: '', num3: '' },
+        telefono: '',
         direccionPreview: '', buscando: false, sinCobertura: false, errorDir: '',
 
         limpiarPedidoAnterior() {
-            ['pos_carrito','pos_cliente','pos_cliente_guardado','pos_cupon']
+            ['pos_carrito','pos_cliente','pos_cliente_guardado','pos_cupon','pos_telefono']
                 .forEach(k => localStorage.removeItem(k));
         },
 
@@ -406,6 +420,7 @@ function homeApp() {
                     localStorage.setItem('ciudad',       this.ciudadSeleccionada);
                     localStorage.setItem('nombreciudad', this.nombreCiudad);
                     localStorage.setItem('direccion',    direccion);
+                    localStorage.setItem('pos_telefono', this.telefono);
                     window.location.href = '{{ route("pedido.menu") }}';
                 }
             } catch {
