@@ -3,6 +3,7 @@
 @section('title', 'Sr WOK — Nuevo Pedido')
 
 @push('head')
+<script src="https://srwok.kerberusipbx.com/socket.io/socket.io.js"></script>
 <style>
     :root {
         --pos-red:      #C62828;
@@ -372,6 +373,58 @@ function homeApp() {
             } finally {
                 this.cargandoCiudades = false;
             }
+            this.conectarSocket();
+        },
+
+        conectarSocket() {
+            const agente = '{{ auth()->user()->agente ?? "" }}';
+            if (!agente || typeof io === 'undefined') return;
+
+            const ciudadMap = {
+                'ARMENIA':      { codintegracion: '7',  nombre: 'Armenia' },
+                'BARRANQUILLA': { codintegracion: '14', nombre: 'Barranquilla' },
+                'BOGOTA':       { codintegracion: '2',  nombre: 'Bogota' },
+                'CALI':         { codintegracion: '1',  nombre: 'Cali' },
+                'MANIZALES':    { codintegracion: '5',  nombre: 'Manizales' },
+                'MEDELLIN':     { codintegracion: '3',  nombre: 'Medellin' },
+                'MONTERIA':     { codintegracion: '11', nombre: 'Monteria' },
+                'NEIVA':        { codintegracion: '15', nombre: 'Neiva' },
+                'PALMIRA':      { codintegracion: '10', nombre: 'Palmira' },
+                'PEREIRA':      { codintegracion: '8',  nombre: 'Pereira' },
+                'POPAYAN':      { codintegracion: '4',  nombre: 'Popayan' },
+                'SINCELEJO':    { codintegracion: '12', nombre: 'Sincelejo' },
+                'TULUA':        { codintegracion: '6',  nombre: 'Tulua' },
+                'IBAGUE':       { codintegracion: '16', nombre: 'Ibague' },
+            };
+
+            const socket = io('https://srwok.kerberusipbx.com/kerberusipbx');
+            let bridged = '';
+
+            socket.on('channels', (msg) => {
+                const llamadas = JSON.parse(msg);
+
+                const llamadaAgente = llamadas.find(l =>
+                    l.Context === 'agent' &&
+                    l.Application === 'AppQueue' &&
+                    l.Channel.indexOf('/' + agente + '@') > -1
+                );
+
+                if (!llamadaAgente) return;
+
+                const llamadaUsuario = llamadas.find(l =>
+                    l.Bridged === llamadaAgente.Bridged &&
+                    l.Application === 'Queue'
+                );
+
+                if (llamadaUsuario && bridged !== llamadaUsuario.Bridged) {
+                    bridged = llamadaUsuario.Bridged;
+
+                    const ciudad = ciudadMap[llamadaUsuario.Name];
+                    if (ciudad) this.seleccionarCiudad(ciudad);
+
+                    this.telefono = llamadaUsuario.CallerID;
+                }
+            });
         },
 
         seleccionarCiudad(c) {
