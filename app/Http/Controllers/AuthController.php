@@ -15,9 +15,13 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
+            'email'     => ['required', 'email'],
+            'password'  => ['required'],
+            'extension' => ['required', 'integer', 'min:0'],
         ]);
+
+        $extension = $credentials['extension'];
+        unset($credentials['extension']);
 
         $user = \App\Models\User::where('email', $credentials['email'])->first();
 
@@ -27,6 +31,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            Auth::user()->update(['extension' => $extension]);
             return redirect()->intended(route('dashboard'));
         }
 
