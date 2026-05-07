@@ -24,18 +24,22 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'     => ['required', 'string', 'min:3'],
-            'email'    => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role'     => ['required', 'string', 'exists:roles,name'],
-            'active'   => ['nullable', 'boolean'],
+            'name'      => ['required', 'string', 'min:3'],
+            'email'     => ['required', 'email', 'unique:users,email'],
+            'password'  => ['required', 'string', 'min:8', 'confirmed'],
+            'role'      => ['required', 'string', 'exists:roles,name'],
+            'active'    => ['nullable', 'boolean'],
+            'extension' => ['nullable', 'integer'],
+            'agente'    => ['nullable', 'string', 'max:50'],
         ]);
 
         $user = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'password' => Hash::make($data['password']),
-            'active'   => $request->boolean('active', true),
+            'name'      => $data['name'],
+            'email'     => $data['email'],
+            'password'  => Hash::make($data['password']),
+            'active'    => $request->boolean('active', true),
+            'extension' => $data['extension'] ?? null,
+            'agente'    => $data['agente'] ?? null,
         ]);
 
         $user->assignRole($data['role']);
@@ -52,17 +56,21 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
-            'name'     => ['required', 'string', 'min:3'],
-            'email'    => ['required', 'email', 'unique:users,email,' . $user->id],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role'     => ['required', 'string', 'exists:roles,name'],
-            'active'   => ['nullable', 'boolean'],
+            'name'      => ['required', 'string', 'min:3'],
+            'email'     => ['required', 'email', 'unique:users,email,' . $user->id],
+            'password'  => ['nullable', 'string', 'min:8', 'confirmed'],
+            'role'      => ['required', 'string', 'exists:roles,name'],
+            'active'    => ['nullable', 'boolean'],
+            'extension' => ['nullable', 'integer'],
+            'agente'    => ['nullable', 'string', 'max:50'],
         ]);
 
         $user->update([
-            'name'   => $data['name'],
-            'email'  => $data['email'],
-            'active' => $request->boolean('active'),
+            'name'      => $data['name'],
+            'email'     => $data['email'],
+            'active'    => $request->boolean('active'),
+            'extension' => $data['extension'] ?? null,
+            'agente'    => $data['agente'] ?? null,
             ...($data['password'] ? ['password' => Hash::make($data['password'])] : []),
         ]);
 

@@ -17,6 +17,8 @@
             <tr>
                 <th class="text-left px-5 py-3 font-semibold text-gray-600">Nombre</th>
                 <th class="text-left px-5 py-3 font-semibold text-gray-600">Correo</th>
+                <th class="text-left px-5 py-3 font-semibold text-gray-600">Agente</th>
+                <th class="text-left px-5 py-3 font-semibold text-gray-600">Ext.</th>
                 <th class="text-left px-5 py-3 font-semibold text-gray-600">Perfil</th>
                 <th class="text-left px-5 py-3 font-semibold text-gray-600">Estado</th>
                 <th class="px-5 py-3"></th>
@@ -27,6 +29,8 @@
             <tr class="hover:bg-gray-50 transition">
                 <td class="px-5 py-3 font-medium text-gray-800">{{ $user->name }}</td>
                 <td class="px-5 py-3 text-gray-500">{{ $user->email }}</td>
+                <td class="px-5 py-3 text-gray-500">{{ $user->agente ?? '—' }}</td>
+                <td class="px-5 py-3 text-gray-500">{{ $user->extension ?? '—' }}</td>
                 <td class="px-5 py-3">
                     <span class="bg-[#FFEBEE] text-[#C62828] text-xs font-medium px-2 py-0.5 rounded capitalize">
                         {{ $user->getRoleNames()->first() ?? '—' }}
