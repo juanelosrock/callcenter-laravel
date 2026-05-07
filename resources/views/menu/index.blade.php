@@ -925,7 +925,7 @@ function menuApp() {
                     foto: d.foto, nombre: d.tiendanombre, descripcion: d.tiendadescripcion,
                     tiempoEntrega: d.tiendatiempoentrega, apertura: d.tiendaapertura, cierre: d.tiendacierre,
                 };
-                this.valorDomicilio = parseInt(d.tiendadelivery) || 0;
+                this.valorDomicilio = parseInt(d.calldelivery) || 0;
                 localStorage.setItem('valordomicilio', this.valorDomicilio);
                 if (parseInt(d.tiendahorario) === 0 || parseInt(d.tiendaestado) === 0) this.modal = 'cerrado';
             }
