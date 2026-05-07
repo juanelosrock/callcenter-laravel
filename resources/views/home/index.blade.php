@@ -377,7 +377,7 @@ function homeApp() {
         },
 
         conectarSocket() {
-            const agente = '{{ auth()->user()->agente ?? "" }}';
+            const agente = '{{ auth()->user()->extension ?? "" }}';
             if (!agente || typeof io === 'undefined') return;
 
             const ciudadMap = {
