@@ -134,10 +134,14 @@ class OrderController extends Controller
             'X-Client-Secret' => config('cupones.client_secret'),
         ];
 
+        $email = !empty($data['correo'])
+            ? $data['correo']
+            : 'cliente_' . substr(md5($data['celular'] . time()), 0, 8) . '@srwok.com';
+
         $payload = [
             'name'            => $data['nombre'],
             'phone'           => $data['celular'],
-            'email'           => $data['correo'],
+            'email'           => $email,
             'city_name'       => $data['nombreciudad'] ?? '',
             'department'      => 'Colombia',
             'document_type'   => 'CC',
