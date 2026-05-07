@@ -161,7 +161,7 @@
                             <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                                 <template x-for="prod in cat.productos" :key="prod.id">
                                     <button
-                                        @click="tiendaAbierta ? abrirProducto(prod, cat) : (modal = 'cerrado')"
+                                        @click="abrirProducto(prod, cat)"
                                         class="prod-card bg-white rounded-xl overflow-hidden text-left shadow-sm focus:outline-none"
                                     >
                                         {{-- Imagen --}}
@@ -824,21 +824,28 @@
     <div x-show="modal === 'cerrado'" x-transition
          class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
         <div class="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl">
-            <div class="w-full h-24 flex items-center justify-center" style="background:var(--pos-header);">
+            <div class="w-full h-24 flex items-center justify-center relative" style="background:var(--pos-header);">
                 <span class="text-white font-bold text-2xl tracking-widest">SR WOK</span>
             </div>
             <div class="p-6 text-center">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Estamos cerrados</h3>
-                <p class="text-sm text-gray-400 mb-1">El punto de venta no está disponible.</p>
+                <div class="w-14 h-14 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-7 h-7 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Punto de venta cerrado</h3>
+                <p class="text-sm text-gray-400 mb-1">El punto de venta está fuera de su horario habitual.</p>
                 <template x-if="tienda.apertura">
                     <p class="text-sm text-gray-600 mb-5">
                         Horario: <span class="font-bold" x-text="tienda.apertura + ' – ' + tienda.cierre"></span>
                     </p>
                 </template>
-                <a href="{{ route('pedido.nuevo') }}"
-                   class="block w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl text-sm">
-                    Volver al inicio
-                </a>
+                <p class="text-xs text-gray-400 mb-5">Como agente de callcenter puedes continuar tomando el pedido.</p>
+                <button @click="modal = null"
+                        class="block w-full text-white font-bold py-3.5 rounded-xl text-sm"
+                        style="background:var(--pos-red);">
+                    Continuar con el pedido
+                </button>
             </div>
         </div>
     </div>
@@ -920,8 +927,7 @@ function menuApp() {
                 };
                 this.valorDomicilio = parseInt(d.tiendadelivery) || 0;
                 localStorage.setItem('valordomicilio', this.valorDomicilio);
-                if (parseInt(d.tiendahorario) === 0) this.modal = 'cerrado';
-                if (parseInt(d.tiendaestado)  === 0) { this.tiendaAbierta = false; this.modal = 'cerrado'; }
+                if (parseInt(d.tiendahorario) === 0 || parseInt(d.tiendaestado) === 0) this.modal = 'cerrado';
             }
         },
 
