@@ -222,7 +222,7 @@ class OrderController extends Controller
         $orden->appendChild($doc->createElement('ZONA',     $data['pdv']));
         $orden->appendChild($doc->createElement('CIUDAD',   $data['ciudad']));
         $orden->appendChild($doc->createElement('FECHA',    now()->format('Y-m-d H:i:s')));
-        $orden->appendChild($doc->createElement('VALOR',    $data['total'] - $data['valordomicilio']));
+        $orden->appendChild($doc->createElement('VALOR',    $data['total']));
         $orden->appendChild($doc->createElement('RECARGO',  $data['valordomicilio']));
         $orden->appendChild($doc->createElement('OBSERVACION', $data['nombre']));
 
