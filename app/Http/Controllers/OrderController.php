@@ -53,6 +53,8 @@ class OrderController extends Controller
         $cantidades = json_decode($data['cantidades'], true);
         $totales    = json_decode($data['totales'], true);
 
+        \Log::info('[SIBCO] valordomicilio recibido del frontend: ' . $data['valordomicilio']);
+
         $ordenWeb = $this->construirOrdenXml(
             $data, $tipoPago, $cabeceras, $pedidos, $cantidades, $totales,
             (float) ($data['cupon_porcentaje'] ?? 0)
@@ -259,6 +261,8 @@ class OrderController extends Controller
 
         $doc->formatOutput = true;
         $xml = $doc->saveXML();
+
+        \Log::info('[SIBCO] XML enviado: ' . $xml);
 
         $obj = simplexml_load_string($xml);
         return json_decode(json_encode($obj), true);
