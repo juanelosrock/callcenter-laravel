@@ -615,7 +615,7 @@ function menuApp() {
             { valor: 'Efectivo', texto: 'Efectivo', icono: '💵', desc: 'Paga al recibir tu pedido' },
             { valor: 'Datafono', texto: 'Datáfono', icono: '💳', desc: 'Terminal en la entrega' },
         ],
-        cliente: { nombre: '', correo: '', celular: '', complemento: localStorage.getItem('complemento') || '' },
+        cliente: { nombre: '', correo: '', celular: '', complemento: '' },
         clienteValido: false, enviando: false, errorEnvio: '',
 
         get menuFiltrado() {
@@ -648,7 +648,7 @@ function menuApp() {
             if (data.length > 0) {
                 const d = data[0];
                 this.tienda = { foto: d.foto, nombre: d.tiendanombre, descripcion: d.tiendadescripcion, tiempoEntrega: d.tiendatiempoentrega, apertura: d.tiendaapertura, cierre: d.tiendacierre };
-                this.valorDomicilio = parseInt(d.tiendadelivery) || 0;
+                this.valorDomicilio = parseInt(d.calldelivery) || 0;
                 localStorage.setItem('valordomicilio', this.valorDomicilio);
                 if (parseInt(d.tiendahorario) === 0) this.modal = 'cerrado';
                 if (parseInt(d.tiendaestado) === 0) { this.tiendaAbierta = false; this.modal = 'cerrado'; }

@@ -265,7 +265,7 @@ function homeApp() {
                     localStorage.setItem('nombreciudad', this.nombreCiudad);
                     localStorage.setItem('direccion', direccion);
                     localStorage.setItem('complemento', this.complemento.trim());
-                    window.location.href = '{{ route("pedido.menu") }}';
+                    window.location.href = '{{ route("menu") }}';
                 }
             } catch (e) {
                 this.errorDir = 'Error al verificar la dirección.';
