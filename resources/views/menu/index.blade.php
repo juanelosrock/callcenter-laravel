@@ -522,10 +522,25 @@
                                         <div class="w-1.5 h-5 rounded-full flex-shrink-0"
                                              :style="grupoSeleccionado(grupo)
                                                  ? 'background:#16a34a'
-                                                 : 'background:var(--pos-red)'"></div>
-                                        <h4 class="font-bold text-gray-800 text-sm" x-text="grupo.nombrecat"></h4>
+                                                 : (parseInt(grupo.obligatorio) ? 'background:var(--pos-red)' : 'background:#9ca3af')"></div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-800 text-sm" x-text="grupo.nombrecat"></h4>
+                                            <p class="text-[11px] text-gray-400"
+                                               x-text="parseInt(grupo.tipo) === 2
+                                                   ? (parseInt(grupo.minimo) > 0 && parseInt(grupo.minimo) === parseInt(grupo.maximo)
+                                                       ? 'Elige ' + grupo.minimo
+                                                       : (parseInt(grupo.minimo) > 0
+                                                           ? 'Elige entre ' + grupo.minimo + ' y ' + grupo.maximo
+                                                           : 'Hasta ' + grupo.maximo))
+                                                   : (parseInt(grupo.obligatorio) ? 'Elige 1 opción' : 'Opcional')">
+                                            </p>
+                                        </div>
                                     </div>
                                     <div class="flex items-center gap-1.5">
+                                        <template x-if="parseInt(grupo.tipo) === 2">
+                                            <span class="text-[11px] text-gray-400 tabular-nums"
+                                                  x-text="(seleccionAdicionales[grupo.idcategoria] || []).length + '/' + grupo.maximo"></span>
+                                        </template>
                                         <template x-if="grupoSeleccionado(grupo)">
                                             <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
@@ -534,8 +549,8 @@
                                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
                                               :class="grupoSeleccionado(grupo)
                                                   ? 'bg-green-50 text-green-700'
-                                                  : (parseInt(grupo.tipo) === 2 ? 'bg-gray-50 text-gray-500' : 'bg-red-50 text-red-600')"
-                                              x-text="grupoSeleccionado(grupo) ? 'Seleccionado' : (parseInt(grupo.tipo) === 2 ? 'Opcional' : 'Requerido')"></span>
+                                                  : (parseInt(grupo.obligatorio) ? 'bg-red-50 text-red-600' : 'bg-gray-50 text-gray-500')"
+                                              x-text="grupoSeleccionado(grupo) ? 'Seleccionado' : (parseInt(grupo.obligatorio) ? 'Requerido' : 'Opcional')"></span>
                                     </div>
                                 </div>
 
@@ -583,7 +598,7 @@
 
                                             {{-- tipo 2: checkbox (selección múltiple) --}}
                                             <template x-if="parseInt(grupo.tipo) === 2">
-                                                <div @click="toggleCheckbox(grupo.idcategoria, adic.adicionalesid)">
+                                                <div @click="toggleCheckbox(grupo.idcategoria, adic.adicionalesid, grupo.maximo)">
                                                     <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border-2 transition-all"
                                                          :class="isSelected(grupo, adic)
                                                              ? 'border-[#C62828] bg-[#FFEBEE] shadow-sm'
@@ -1014,7 +1029,7 @@ function menuApp() {
                 adicionales.forEach(g => {
                     this.seleccionAdicionales[g.idcategoria] = parseInt(g.tipo) === 2 ? [] : '';
                 });
-                if (adicionales.length === 0) this.puedoAgregar = true;
+                this.verificarAdicionales();
             } finally {
                 this.cargandoAdicionales = false;
                 this.$nextTick(() => {
@@ -1025,10 +1040,14 @@ function menuApp() {
         },
 
         verificarAdicionales() {
-            const requeridos  = this.adicionalesProducto.filter(g => parseInt(g.tipo) !== 2).length;
-            const completados = this.adicionalesProducto.filter(g => parseInt(g.tipo) !== 2)
-                .filter(g => this.seleccionAdicionales[g.idcategoria] !== '').length;
-            this.puedoAgregar = completados >= requeridos;
+            this.puedoAgregar = this.adicionalesProducto.every(g => {
+                if (!parseInt(g.obligatorio)) return true;
+                const min = parseInt(g.minimo) || 1;
+                if (parseInt(g.tipo) === 2) {
+                    return (this.seleccionAdicionales[g.idcategoria] || []).length >= min;
+                }
+                return this.seleccionAdicionales[g.idcategoria] !== '';
+            });
         },
 
         isSelected(grupo, adic) {
@@ -1039,16 +1058,24 @@ function menuApp() {
 
         grupoSeleccionado(grupo) {
             const val = this.seleccionAdicionales[grupo.idcategoria];
-            return Array.isArray(val) ? val.length > 0 : !!val;
+            if (Array.isArray(val)) {
+                const min = parseInt(grupo.obligatorio) ? (parseInt(grupo.minimo) || 1) : 1;
+                return val.length >= min;
+            }
+            return !!val;
         },
 
-        toggleCheckbox(idcategoria, adicionalesid) {
+        toggleCheckbox(idcategoria, adicionalesid, maximo) {
             const arr = this.seleccionAdicionales[idcategoria];
             if (!Array.isArray(arr)) return;
             const id  = String(adicionalesid);
             const idx = arr.indexOf(id);
-            if (idx === -1) arr.push(id);
-            else arr.splice(idx, 1);
+            if (idx === -1) {
+                if (parseInt(maximo) > 0 && arr.length >= parseInt(maximo)) return;
+                arr.push(id);
+            } else {
+                arr.splice(idx, 1);
+            }
             this.verificarAdicionales();
         },
 
