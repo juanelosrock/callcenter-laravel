@@ -631,9 +631,13 @@ function menuApp() {
         get totalConDomicilio() { return this.totalCarrito + parseInt(this.valorDomicilio) - this.cupon.descuento; },
         get subtotalActual() {
             const base = parseInt(this.productoActual.precio || 0) * this.cantidad;
-            const adics = Object.values(this.seleccionAdicionales).reduce((s, id) => {
-                const a = this.adicionalesProducto.flatMap(g => g.adicionales).find(x => String(x.adicionalesid) === String(id));
-                return s + (a ? parseInt(a.precio || 0) * this.cantidad : 0);
+            const todosAdics = this.adicionalesProducto.flatMap(g => g.adicionales);
+            const adics = Object.values(this.seleccionAdicionales).reduce((s, val) => {
+                const ids = Array.isArray(val) ? val : (val !== '' ? [String(val)] : []);
+                return s + ids.reduce((sum, id) => {
+                    const a = todosAdics.find(x => String(x.adicionalesid) === String(id));
+                    return sum + (a ? parseInt(a.precio || 0) * this.cantidad : 0);
+                }, 0);
             }, 0);
             return base + adics;
         },
