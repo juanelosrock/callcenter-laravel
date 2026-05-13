@@ -520,22 +520,22 @@
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
                                     <div class="flex items-center gap-2">
                                         <div class="w-1.5 h-5 rounded-full flex-shrink-0"
-                                             :style="seleccionAdicionales[grupo.idcategoria]
+                                             :style="grupoSeleccionado(grupo)
                                                  ? 'background:#16a34a'
                                                  : 'background:var(--pos-red)'"></div>
                                         <h4 class="font-bold text-gray-800 text-sm" x-text="grupo.nombrecat"></h4>
                                     </div>
                                     <div class="flex items-center gap-1.5">
-                                        <template x-if="seleccionAdicionales[grupo.idcategoria]">
+                                        <template x-if="grupoSeleccionado(grupo)">
                                             <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                             </svg>
                                         </template>
                                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                                              :class="seleccionAdicionales[grupo.idcategoria]
+                                              :class="grupoSeleccionado(grupo)
                                                   ? 'bg-green-50 text-green-700'
-                                                  : 'bg-red-50 text-red-600'"
-                                              x-text="seleccionAdicionales[grupo.idcategoria] ? 'Seleccionado' : 'Requerido'"></span>
+                                                  : (parseInt(grupo.tipo) === 2 ? 'bg-gray-50 text-gray-500' : 'bg-red-50 text-red-600')"
+                                              x-text="grupoSeleccionado(grupo) ? 'Seleccionado' : (parseInt(grupo.tipo) === 2 ? 'Opcional' : 'Requerido')"></span>
                                     </div>
                                 </div>
 
@@ -543,39 +543,75 @@
                                 <div class="p-3 grid grid-cols-2 gap-2">
                                     <template x-for="adic in grupo.adicionales" :key="adic.adicionalesid">
                                         <label class="relative flex flex-col cursor-pointer select-none">
-                                            <input type="radio"
-                                                   :name="'grupo-' + grupo.idcategoria"
-                                                   :value="adic.adicionalesid"
-                                                   x-model="seleccionAdicionales[grupo.idcategoria]"
-                                                   @change="verificarAdicionales(); avanzarGrupo(grupo.idcategoria)"
-                                                   class="sr-only"/>
-                                            <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border-2 transition-all"
-                                                 :class="seleccionAdicionales[grupo.idcategoria] == adic.adicionalesid
-                                                     ? 'border-[#C62828] bg-[#FFEBEE] shadow-sm'
-                                                     : 'border-gray-200 bg-white hover:border-gray-300'">
-                                                {{-- Radio visual --}}
-                                                <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
-                                                     :class="seleccionAdicionales[grupo.idcategoria] == adic.adicionalesid
-                                                         ? 'border-[#C62828] bg-[#C62828]'
-                                                         : 'border-gray-300 bg-white'">
-                                                    <template x-if="seleccionAdicionales[grupo.idcategoria] == adic.adicionalesid">
-                                                        <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 8 8">
-                                                            <circle cx="4" cy="4" r="3"/>
-                                                        </svg>
-                                                    </template>
+
+                                            {{-- tipo 1: radio (selección única) --}}
+                                            <template x-if="parseInt(grupo.tipo) !== 2">
+                                                <div>
+                                                    <input type="radio"
+                                                           :name="'grupo-' + grupo.idcategoria"
+                                                           :value="adic.adicionalesid"
+                                                           x-model="seleccionAdicionales[grupo.idcategoria]"
+                                                           @change="verificarAdicionales(); avanzarGrupo(grupo.idcategoria)"
+                                                           class="sr-only"/>
+                                                    <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border-2 transition-all"
+                                                         :class="isSelected(grupo, adic)
+                                                             ? 'border-[#C62828] bg-[#FFEBEE] shadow-sm'
+                                                             : 'border-gray-200 bg-white hover:border-gray-300'">
+                                                        <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all"
+                                                             :class="isSelected(grupo, adic)
+                                                                 ? 'border-[#C62828] bg-[#C62828]'
+                                                                 : 'border-gray-300 bg-white'">
+                                                            <template x-if="isSelected(grupo, adic)">
+                                                                <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 8 8">
+                                                                    <circle cx="4" cy="4" r="3"/>
+                                                                </svg>
+                                                            </template>
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-xs font-semibold text-gray-800 leading-tight"
+                                                               x-text="adic.adicionalnombre"></p>
+                                                            <p x-show="parseInt(adic.precio) > 0"
+                                                               class="text-[11px] font-bold mt-0.5"
+                                                               style="color:var(--pos-red)"
+                                                               x-text="'+$' + formatNum(adic.precio)"></p>
+                                                            <p x-show="!parseInt(adic.precio)"
+                                                               class="text-[11px] text-gray-400 mt-0.5">Incluido</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                {{-- Texto --}}
-                                                <div class="flex-1 min-w-0">
-                                                    <p class="text-xs font-semibold text-gray-800 leading-tight"
-                                                       x-text="adic.adicionalnombre"></p>
-                                                    <p x-show="parseInt(adic.precio) > 0"
-                                                       class="text-[11px] font-bold mt-0.5"
-                                                       style="color:var(--pos-red)"
-                                                       x-text="'+$' + formatNum(adic.precio)"></p>
-                                                    <p x-show="!parseInt(adic.precio)"
-                                                       class="text-[11px] text-gray-400 mt-0.5">Incluido</p>
+                                            </template>
+
+                                            {{-- tipo 2: checkbox (selección múltiple) --}}
+                                            <template x-if="parseInt(grupo.tipo) === 2">
+                                                <div @click="toggleCheckbox(grupo.idcategoria, adic.adicionalesid)">
+                                                    <div class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border-2 transition-all"
+                                                         :class="isSelected(grupo, adic)
+                                                             ? 'border-[#C62828] bg-[#FFEBEE] shadow-sm'
+                                                             : 'border-gray-200 bg-white hover:border-gray-300'">
+                                                        <div class="w-4 h-4 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all"
+                                                             :class="isSelected(grupo, adic)
+                                                                 ? 'border-[#C62828] bg-[#C62828]'
+                                                                 : 'border-gray-300 bg-white'">
+                                                            <template x-if="isSelected(grupo, adic)">
+                                                                <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 10 10">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 5l2.5 2.5L8 3"/>
+                                                                </svg>
+                                                            </template>
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-xs font-semibold text-gray-800 leading-tight"
+                                                               x-text="adic.adicionalnombre"></p>
+                                                            <p x-show="parseInt(adic.precio) > 0"
+                                                               class="text-[11px] font-bold mt-0.5"
+                                                               style="color:var(--pos-red)"
+                                                               x-text="'+$' + formatNum(adic.precio)"></p>
+                                                            <p x-show="!parseInt(adic.precio)"
+                                                               class="text-[11px] text-gray-400 mt-0.5">Incluido</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </template>
+
                                         </label>
                                     </template>
                                 </div>
@@ -889,8 +925,10 @@ function menuApp() {
         get domicilioEfectivo() { return this.aplicarDomicilio ? parseInt(this.valorDomicilio) : 0; },
         get totalConDomicilio() { return this.totalCarrito + this.domicilioEfectivo - this.cupon.descuento; },
         get subtotalActual() {
-            const base  = parseInt(this.productoActual.precio || 0) * this.cantidad;
-            const adics = Object.values(this.seleccionAdicionales).reduce((s, id) => {
+            const base   = parseInt(this.productoActual.precio || 0) * this.cantidad;
+            const allIds = Object.values(this.seleccionAdicionales)
+                .flatMap(v => Array.isArray(v) ? v : (v !== '' ? [v] : []));
+            const adics  = allIds.reduce((s, id) => {
                 const a = this.adicionalesProducto.flatMap(g => g.adicionales)
                               .find(x => String(x.adicionalesid) === String(id));
                 return s + (a ? parseInt(a.precio || 0) * this.cantidad : 0);
@@ -973,6 +1011,9 @@ function menuApp() {
                 const res      = await this.apiPost('{{ route("api.producto") }}', { producto: prod.id });
                 const adicionales = await res.json();
                 this.adicionalesProducto = adicionales;
+                adicionales.forEach(g => {
+                    this.seleccionAdicionales[g.idcategoria] = parseInt(g.tipo) === 2 ? [] : '';
+                });
                 if (adicionales.length === 0) this.puedoAgregar = true;
             } finally {
                 this.cargandoAdicionales = false;
@@ -984,9 +1025,31 @@ function menuApp() {
         },
 
         verificarAdicionales() {
-            const requeridos  = this.adicionalesProducto.length;
-            const completados = Object.values(this.seleccionAdicionales).filter(v => v !== '').length;
+            const requeridos  = this.adicionalesProducto.filter(g => parseInt(g.tipo) !== 2).length;
+            const completados = this.adicionalesProducto.filter(g => parseInt(g.tipo) !== 2)
+                .filter(g => this.seleccionAdicionales[g.idcategoria] !== '').length;
             this.puedoAgregar = completados >= requeridos;
+        },
+
+        isSelected(grupo, adic) {
+            const val = this.seleccionAdicionales[grupo.idcategoria];
+            if (Array.isArray(val)) return val.includes(String(adic.adicionalesid));
+            return String(val) === String(adic.adicionalesid);
+        },
+
+        grupoSeleccionado(grupo) {
+            const val = this.seleccionAdicionales[grupo.idcategoria];
+            return Array.isArray(val) ? val.length > 0 : !!val;
+        },
+
+        toggleCheckbox(idcategoria, adicionalesid) {
+            const arr = this.seleccionAdicionales[idcategoria];
+            if (!Array.isArray(arr)) return;
+            const id  = String(adicionalesid);
+            const idx = arr.indexOf(id);
+            if (idx === -1) arr.push(id);
+            else arr.splice(idx, 1);
+            this.verificarAdicionales();
         },
 
         avanzarGrupo(idcategoria) {
@@ -1008,9 +1071,9 @@ function menuApp() {
                 nombre: this.productoActual.nombre,
                 precio: this.productoActual.precio,
             };
-            const adicionales  = Object.entries(this.seleccionAdicionales)
-                .filter(([, v]) => v !== '')
-                .map(([, id])   => adicionesBase.find(a => String(a.ID) === String(id)))
+            const adicionales  = Object.values(this.seleccionAdicionales)
+                .flatMap(v => Array.isArray(v) ? v : (v !== '' ? [v] : []))
+                .map(id => adicionesBase.find(a => String(a.ID) === String(id)))
                 .filter(Boolean);
             const totalAdics   = adicionales.reduce((s, a) => s + parseInt(a.precio || 0), 0);
             const total        = (parseInt(combo.precio || 0) + totalAdics) * this.cantidad;
