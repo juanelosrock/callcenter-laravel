@@ -20,6 +20,7 @@ class OrderController extends Controller
             'nombre'        => ['required', 'string', 'min:3'],
             'correo'        => ['nullable', 'email'],
             'celular'       => ['required', 'string', 'min:7'],
+            'barrio'        => ['nullable', 'string'],
             'complemento'   => ['nullable', 'string'],
             'formapago'     => ['required', 'string'],
             'cabeceras'     => ['required', 'json'],
