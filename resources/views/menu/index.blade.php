@@ -1161,6 +1161,7 @@ function menuApp() {
                 ciudad: localStorage.getItem('ciudad'),
                 nombreciudad: localStorage.getItem('nombreciudad') || '',
                 direccion: localStorage.getItem('direccion'),
+                barrio: localStorage.getItem('barrio') || '',
                 nombre: this.cliente.nombre, correo: this.cliente.correo,
                 celular: this.cliente.celular, complemento: this.cliente.complemento,
                 formapago: this.formaPagoSeleccionada,

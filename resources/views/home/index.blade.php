@@ -270,6 +270,29 @@
                             </div>
                         </div>
 
+                        {{-- Barrio (obligatorio) --}}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wide">
+                                Barrio <span class="text-red-600">*</span>
+                            </label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <input x-model="barrio" type="text" placeholder="Ej: El Poblado, Chapinero, Laureles…"
+                                       class="w-full border-2 rounded-xl pl-9 pr-3 py-2.5 text-sm text-gray-700 transition-colors"
+                                       :class="barrio ? 'border-gray-100' : 'border-red-300 bg-red-50'"/>
+                            </div>
+                            <p class="mt-1 text-xs font-semibold text-red-500 flex items-center gap-1">
+                                <svg class="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                Este campo es obligatorio para ubicar correctamente tu pedido
+                            </p>
+                        </div>
+
                         <p x-show="errorDir" class="text-red-500 text-xs flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -280,7 +303,7 @@
 
                         {{-- Botón confirmar --}}
                         <button @click="buscarDireccion()"
-                                :disabled="buscando || !dir.tipo || !dir.num1"
+                                :disabled="buscando || !dir.tipo || !dir.num1 || !barrio"
                                 class="w-full text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm transition-all disabled:opacity-40 hover:opacity-90 active:scale-[0.98] shadow-md"
                                 style="background:var(--pos-red);">
                             <template x-if="buscando">
@@ -351,7 +374,7 @@ function homeApp() {
         ciudades: [], cargandoCiudades: true,
         ciudadSeleccionada: '', nombreCiudad: '', errorCiudad: '',
         dir: { tipo: '', num1: '', orient1: '', num2: '', orient2: '', num3: '' },
-        telefono: '',
+        telefono: '', barrio: '',
         direccionPreview: '', buscando: false, sinCobertura: false, errorDir: '',
 
         limpiarPedidoAnterior() {
@@ -431,6 +454,7 @@ function homeApp() {
             this.ciudadSeleccionada = c.codintegracion;
             this.nombreCiudad       = c.nombre;
             this.dir                = { tipo: '', num1: '', orient1: '', num2: '', orient2: '', num3: '' };
+            this.barrio             = '';
             this.direccionPreview   = '';
             this.errorDir           = '';
         },
@@ -458,6 +482,7 @@ function homeApp() {
             if (num3)    partes.push(num3);
             const direccion = partes.join(' ');
             if (!tipo || !num1) { this.errorDir = 'Ingresa al menos el tipo de vía y número'; return; }
+            if (!this.barrio.trim()) { this.errorDir = 'El barrio es obligatorio para ubicar el pedido'; return; }
             this.buscando = true;
             try {
                 const res = await fetch('{{ route("api.validar-direccion") }}', {
@@ -473,6 +498,7 @@ function homeApp() {
                     localStorage.setItem('ciudad',       this.ciudadSeleccionada);
                     localStorage.setItem('nombreciudad', this.nombreCiudad);
                     localStorage.setItem('direccion',    direccion);
+                    localStorage.setItem('barrio',       this.barrio.trim());
                     localStorage.setItem('pos_telefono', this.telefono);
                     window.location.href = '{{ route("pedido.menu") }}';
                 }

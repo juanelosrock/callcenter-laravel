@@ -212,7 +212,8 @@ class OrderController extends Controller
         $cliente->appendChild($doc->createElement('DIRECCION', $data['direccion']));
         $cliente->appendChild($doc->createElement('CIUDAD',    $data['ciudad']));
         $cliente->appendChild($doc->createElement('TELEFONO',  $data['celular']));
-        $cliente->appendChild($doc->createElement('DIRECCION2', $data['complemento'] ?? ''));
+        $dir2 = trim(implode(' - ', array_filter([$data['barrio'] ?? '', $data['complemento'] ?? ''])));
+        $cliente->appendChild($doc->createElement('DIRECCION2', $dir2));
         $cliente->appendChild($doc->createElement('FCM',       $data['fcm'] ?? ''));
 
         // Orden
