@@ -209,11 +209,12 @@ class OrderController extends Controller
         $cliente->appendChild($doc->createElement('NOMBRE',    $data['nombre']));
         $cliente->appendChild($doc->createElement('APELLIDO',  '0'));
         $cliente->appendChild($doc->createElement('CORREO',    $data['correo']));
-        $cliente->appendChild($doc->createElement('DIRECCION', $data['direccion']));
+        $barrio = trim($data['barrio'] ?? '');
+        $dir1   = $barrio ? $data['direccion'] . ', ' . $barrio : $data['direccion'];
+        $cliente->appendChild($doc->createElement('DIRECCION', $dir1));
         $cliente->appendChild($doc->createElement('CIUDAD',    $data['ciudad']));
         $cliente->appendChild($doc->createElement('TELEFONO',  $data['celular']));
-        $dir2 = trim(implode(' - ', array_filter([$data['barrio'] ?? '', $data['complemento'] ?? ''])));
-        $cliente->appendChild($doc->createElement('DIRECCION2', $dir2));
+        $cliente->appendChild($doc->createElement('DIRECCION2', trim($data['complemento'] ?? '')));
         $cliente->appendChild($doc->createElement('FCM',       $data['fcm'] ?? ''));
 
         // Orden
